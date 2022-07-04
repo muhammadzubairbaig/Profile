@@ -65,6 +65,7 @@ export default function MultipleSelectChip({ options, onSelect, selectedValue, l
         renderInput={(params) => (
           <TextField {...params} label={label} />
         )}
+        isOptionEqualToValue={(option, value) => option.title === value.title}
         filterOptions={(options, params) => {
           const filtered = filter(options, params);
 
@@ -80,6 +81,7 @@ export default function MultipleSelectChip({ options, onSelect, selectedValue, l
 
           return filtered;
         }}
+        
 
       />
     </div>

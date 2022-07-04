@@ -1,12 +1,13 @@
 import {
     MenuIcon,
 } from '@heroicons/react/outline'
-import { Fragment } from 'react'
+import { Fragment, useEffect } from 'react'
 import { Menu, Popover, Transition } from '@headlessui/react'
 import { XIcon } from '@heroicons/react/outline'
 import { useNavigate } from 'react-router-dom'
 import { routeConstantsService } from '../../Routes/Routes'
 import { CogIcon } from '@heroicons/react/solid'
+import { Alert } from '@mui/material'
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
@@ -22,6 +23,7 @@ export const Topbar = ({ currentKey, setCurrentKey, children }) => {
     /**
 * @Functions
 */
+
     const onNavActive = (key) => {
         setCurrentKey(key.href);
         navigate(key.href);
@@ -29,6 +31,8 @@ export const Topbar = ({ currentKey, setCurrentKey, children }) => {
 
     return (
         <>
+            {!navigator.onLine ?
+                <Alert severity="warning">You are in offline mode or some issue with connection</Alert> : ''}
             <Popover as='header' className='pb-24 bg-gradient-to-r from-sky-800 to-cyan-600'>
                 {({ open }) => (
                     <>
@@ -60,7 +64,7 @@ export const Topbar = ({ currentKey, setCurrentKey, children }) => {
                                                                 }
                                                                 className={classNames(
                                                                     active ? 'bg-gray-100' : '',
-                                                                    'block px-4 py-2 text-sm text-gray-700'
+                                                                    'block px-4 py-2 text-sm text-gray-700 cursor-pointer'
                                                                 )}
                                                             >
                                                                 {item.name}
@@ -141,13 +145,6 @@ export const Topbar = ({ currentKey, setCurrentKey, children }) => {
                                         <div className='rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 bg-white divide-y divide-gray-200'>
                                             <div className='pt-3 pb-2'>
                                                 <div className='flex items-center justify-between px-4'>
-                                                    <div>
-                                                        <img
-                                                            className='h-8 w-auto'
-                                                            src='https://tailwindui.com/img/logos/workflow-mark-cyan-600.svg'
-                                                            alt='Workflow'
-                                                        />
-                                                    </div>
                                                     <div className='-mr-2'>
                                                         <Popover.Button className='bg-white rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-cyan-500'>
                                                             <XIcon className='h-6 w-6' aria-hidden='true' />

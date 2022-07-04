@@ -1,8 +1,8 @@
 import { format } from 'date-fns';
 import { addDays } from 'date-fns/esm';
 import React, { useEffect, useState } from 'react';
+import { useLayoutEffect } from 'react';
 import Label from './Label';
-
 const AddInputFields = ({ form, buttonText, name, selectedFields }) => {
     /**
   * @Variables and @Hooks
@@ -15,12 +15,15 @@ const AddInputFields = ({ form, buttonText, name, selectedFields }) => {
     /**
 * @Functions
 */
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (selectedFields) {
             setFormValues(selectedFields);
         }
+    }, [selectedFields])
+
+    useEffect(() => {
         form(formValues);
-    }, [formValues, form, selectedFields])
+    }, [formValues, form])
 
 
     let handleChange = (i, e, type) => {
@@ -49,7 +52,7 @@ const AddInputFields = ({ form, buttonText, name, selectedFields }) => {
     }
 
     return (
-        <form>
+        <div>
             {formValues.map((element, index) => (
                 <div className="mt-6 grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-6 " key={index}>
                     <div className="sm:col-span-2">
@@ -111,7 +114,6 @@ const AddInputFields = ({ form, buttonText, name, selectedFields }) => {
                             value={element.description || ''}
                             onChange={e => handleChange(index, e, 'description')}
                             className="p-2 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border border-gray-300 rounded-md"
-                            defaultValue={''}
                         />
                     </div>
                     {
@@ -126,7 +128,7 @@ const AddInputFields = ({ form, buttonText, name, selectedFields }) => {
                 <button className="button add mt-2 text-blue-800 font-bold" type="button" onClick={() => addFormFields()}>
                     {buttonText}</button>
             </div>
-        </form>
+        </div>
     )
 }
 

@@ -29,8 +29,9 @@ export const UpdateProfile = () => {
     const [languages, setLanguages] = useState([]);
     const [hobbies, setHobbies] = useState([]);
     const [activity, setActivity] = useState([]);
-    const [isLoading, setisLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const snackbarRef = useRef();
+
     const navigate = useNavigate();
 
     /** 
@@ -46,7 +47,7 @@ export const UpdateProfile = () => {
         const imageRef = ref(storage, `images/${e.name}`);
         uploadBytes(imageRef, e).then((snapshot) => {
             getDownloadURL(snapshot.ref).then((url) => {
-                setImageList(prev => [...prev, url]);
+                setImageList([url]);
             });
             setIsUpload(false);
         }).catch(err => setIsUpload(false))
@@ -71,9 +72,11 @@ export const UpdateProfile = () => {
             // We dont have ID now but if we implement login flow so then we can catch ID through user data
             .doc('1')
             .set({ data });
-
+        localStorage.setItem('update-profile', JSON.stringify(data));
+        localStorage.setItem('profile', JSON.stringify(data));
         //Here we are using snackbar for display Success Message
         snackbarRef.current.handleOpenSnackbar({ text: 'Profile Updated', variant: 'success' })
+
         setTimeout(() => {
             navigate('/');
         }, 1000);
@@ -117,39 +120,49 @@ export const UpdateProfile = () => {
     }
 
     const getProfileData = () => {
-        db
+        const response = db
             .collection('profile')
-            .doc('1')
-            .onSnapshot(snapshot => {
-                const data = snapshot.data().data;
-                setisLoading(true);
-                setValue('about', data.about)
-                setValue('address', data.address)
-                setValue('city', data.city)
-                setValue('code', data.code)
-                setValue('country', data.country)
-                setValue('email', data.email)
-                setValue('firstName', data.firstName)
-                setValue('title', data.title)
-                setValue('lastName', data.lastName)
-                setValue('region', data.region)
-                setValue('date', data.date)
-                setValue('githubUrl', data.githubUrl)
-                setValue('linkedinUrl', data.linkedinUrl)
-                setValue('phone', data.phone)
-                setValue('portfolioUrl', data.portfolioUrl)
-                setValue('imageUrl', data.imageUrl)
-                setSkills(data.skills)
-                setHobbies(data.hobbies)
-                setLanguages(data.languages)
-                setActivity(data.activity)
-                setProfile(data);
-                setImageList([data.imageUrl])
+            .doc('1');
+        response.get().then(result => {
+            const data = result.data().data;
+            getProfileWrapper(data);
+        })
+            .catch(err => {
+                let collection = JSON.parse(localStorage.getItem('update-profile'));
+                getProfileWrapper(collection);
             })
+    }
+
+    const getProfileWrapper = (data) => {
+        setIsLoading(true);
+        setValue('about', data.about)
+        setValue('address', data.address)
+        setValue('city', data.city)
+        setValue('code', data.code)
+        setValue('country', data.country)
+        setValue('email', data.email)
+        setValue('firstName', data.firstName)
+        setValue('title', data.title)
+        setValue('lastName', data.lastName)
+        setValue('region', data.region)
+        setValue('date', data.date)
+        setValue('githubUrl', data.githubUrl)
+        setValue('linkedinUrl', data.linkedinUrl)
+        setValue('phone', data.phone)
+        setValue('portfolioUrl', data.portfolioUrl)
+        setValue('imageUrl', data.imageUrl)
+        setSkills(data.skills)
+        setHobbies(data.hobbies)
+        setLanguages(data.languages)
+        setActivity(data.activity)
+        setProfile(data);
+        setImageList([data.imageUrl])
+        localStorage.setItem('update-profile', JSON.stringify(data));
     }
 
     return (
         <>
+
             {/* Here we are using loader to wait for our api response */}
             {!isLoading ? <Spinner /> :
                 <form className="space-y-8 divide-y divide-gray-200 -mt-24 pb-8 max-w-3xl mx-auto px-4 sm:px-6 lg:max-w-7xl lg:px-2"
@@ -253,9 +266,9 @@ export const UpdateProfile = () => {
                                             <Label title={' Profile Photo'} />
                                             <div className="mt-1 flex items-center">
                                                 <span className="h-12 w-12 rounded-full overflow-hidden bg-gray-100">
-                                                    {profile.imageUrl
+                                                    {imageList
                                                         ?
-                                                        <img src={profile.imageUrl} alt='profile-img' /> :
+                                                        <img src={imageList[0]} alt='profile-img' /> :
                                                         <svg className="h-full w-full text-gray-300" fill="currentColor" viewBox="0 0 24 24">
                                                             <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
                                                         </svg>}
@@ -290,6 +303,7 @@ export const UpdateProfile = () => {
                                                         >
                                                             <span>Upload a file</span>
                                                             <input id="file-upload" name="file-upload" type="file" className="sr-only"
+                                                                accept=".jpg,.png"
                                                                 onChange={(event) => { handleFileUpload(event.target.files[0]) }} />
                                                         </label>
                                                     </div>
@@ -360,12 +374,7 @@ export const UpdateProfile = () => {
                             <Snackbars ref={snackbarRef} />
                             <div className="pt-5 px-5">
                                 <div className="flex justify-end">
-                                    <button
-                                        type="button"
-                                        className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                    >
-                                        Cancel
-                                    </button>
+
                                     <button
                                         type="submit"
                                         className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
