@@ -1,7 +1,7 @@
 import {
     MenuIcon,
 } from '@heroicons/react/outline'
-import { Fragment, useEffect } from 'react'
+import { Fragment } from 'react'
 import { Menu, Popover, Transition } from '@headlessui/react'
 import { XIcon } from '@heroicons/react/outline'
 import { useNavigate } from 'react-router-dom'
